@@ -15,9 +15,9 @@ def update_quality(items)
         end
       end
     end
-    if item.name != 'Sulfuras, Hand of Ragnaros'
-      item.sell_in -= 1
-    end
+
+    item.sell_in -= 1 unless item.name == 'Sulfuras, Hand of Ragnaros'
+
     if item.sell_in < 0
       if item.name != "Aged Brie"
         if item.name != 'Backstage passes to a TAFKAL80ETC concert'
@@ -35,9 +35,12 @@ def update_quality(items)
 end
 
 def change_quality(item, amount)
-  new_quality = [0, item.quality + amount].max
-  new_quality = [new_quality, 50].min
-  item.quality = new_quality
+  new_quality = item.quality + amount
+  item.quality = if    new_quality <  0 then  0
+                 elsif new_quality > 50 then 50
+                 else  new_quality
+                 end
+  item
 end
 
 # DO NOT CHANGE THINGS BELOW -----------------------------------------
