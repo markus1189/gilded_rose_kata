@@ -1,25 +1,17 @@
 def update_quality(items)
   items.each do |item|
     if item.name != 'Aged Brie' && item.name != 'Backstage passes to a TAFKAL80ETC concert'
-      if item.quality > 0
-        if item.name != 'Sulfuras, Hand of Ragnaros'
-          item.quality -= 1
-        end
+      if item.name != 'Sulfuras, Hand of Ragnaros'
+        change_quality(item, -1)
       end
     else
-      if item.quality < 50
-        item.quality += 1
-        if item.name == 'Backstage passes to a TAFKAL80ETC concert'
-          if item.sell_in < 11
-            if item.quality < 50
-              item.quality += 1
-            end
-          end
-          if item.sell_in < 6
-            if item.quality < 50
-              item.quality += 1
-            end
-          end
+      change_quality(item, 1)
+      if item.name == 'Backstage passes to a TAFKAL80ETC concert'
+        if item.sell_in < 11
+          change_quality(item, 1)
+        end
+        if item.sell_in < 6
+          change_quality(item, 1)
         end
       end
     end
@@ -29,21 +21,23 @@ def update_quality(items)
     if item.sell_in < 0
       if item.name != "Aged Brie"
         if item.name != 'Backstage passes to a TAFKAL80ETC concert'
-          if item.quality > 0
-            if item.name != 'Sulfuras, Hand of Ragnaros'
-              item.quality -= 1
-            end
+          if item.name != 'Sulfuras, Hand of Ragnaros'
+            change_quality(item, -1)
           end
         else
-          item.quality = item.quality - item.quality
+          item.quality = 0
         end
       else
-        if item.quality < 50
-          item.quality += 1
-        end
+        change_quality(item, 1)
       end
     end
   end
+end
+
+def change_quality(item, amount)
+  new_quality = [0, item.quality + amount].max
+  new_quality = [new_quality, 50].min
+  item.quality = new_quality
 end
 
 # DO NOT CHANGE THINGS BELOW -----------------------------------------
