@@ -1,6 +1,13 @@
 def update_quality(items)
-  items.map do |item|
-    case item.name
+  extender = lambda { |i| i.extend Klassifiable }
+  items.map(&extender).map(&:klassify).map(&:update_quality!)
+end
+
+# ------------------------------------------------------------------------------
+
+module Klassifiable
+  def klassify
+    case name
     when /Sulfuras, Hand of Ragnaros/
       klass = Ragnaros
     when /Aged Brie/
@@ -13,9 +20,8 @@ def update_quality(items)
       klass = MyItem
     end
 
-    klass.new(item)
-
-  end.map { |i| i.update_quality! }
+    klass.new(self)
+  end
 end
 
 module Updateable
