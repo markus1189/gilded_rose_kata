@@ -7,11 +7,11 @@ def update_quality(items)
       klass = AgedBrie
     when /Backstage pass/
       klass = BackstagePass
+    when /Conjured/
+      klass = ConjuredItem
     else
       klass = MyItem
     end
-
-    puts "#{item.name} => #{klass}"
 
     klass.new(item).update_quality!
   end
@@ -67,6 +67,13 @@ end
 class Ragnaros < MyItem
   def update_quality; end
   def update_sell_in; end
+end
+
+class ConjuredItem < MyItem
+  def update_quality
+    super
+    super
+  end
 end
 
 
