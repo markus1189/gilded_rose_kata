@@ -13,8 +13,9 @@ def update_quality(items)
       klass = MyItem
     end
 
-    klass.new(item).update_quality!
-  end
+    klass.new(item)
+
+  end.map { |i| i.update_quality! }
 end
 
 module Updateable
@@ -76,7 +77,6 @@ class ConjuredItem < MyItem
   end
 end
 
-
 # DO NOT CHANGE THINGS BELOW -----------------------------------------
 
 Item = Struct.new(:name, :sell_in, :quality)
@@ -91,4 +91,3 @@ Item = Struct.new(:name, :sell_in, :quality)
 #   Item.new("Backstage passes to a TAFKAL80ETC concert", 15, 20),
 #   Item.new("Conjured Mana Cake", 3, 6),
 # ]
-
