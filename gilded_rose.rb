@@ -1,47 +1,74 @@
 def update_quality(items)
-  items.each do |item|
-    if item.name != 'Aged Brie' && item.name != 'Backstage passes to a TAFKAL80ETC concert'
-      if item.name != 'Sulfuras, Hand of Ragnaros'
-        change_quality(item, -1)
-      end
+  items.map do |item|
+    case item.name
+    when /Sulfuras, Hand of Ragnaros/
+      klass = Ragnaros
+    when /Aged Brie/
+      klass = AgedBrie
+    when /Backstage pass/
+      klass = BackstagePass
     else
-      change_quality(item, 1)
-      if item.name == 'Backstage passes to a TAFKAL80ETC concert'
-        if item.sell_in < 11
-          change_quality(item, 1)
-        end
-        if item.sell_in < 6
-          change_quality(item, 1)
-        end
-      end
+      klass = MyItem
     end
 
-    item.sell_in -= 1 unless item.name == 'Sulfuras, Hand of Ragnaros'
+    puts "#{item.name} => #{klass}"
 
-    if item.sell_in < 0
-      if item.name != "Aged Brie"
-        if item.name != 'Backstage passes to a TAFKAL80ETC concert'
-          if item.name != 'Sulfuras, Hand of Ragnaros'
-            change_quality(item, -1)
-          end
-        else
-          item.quality = 0
-        end
-      else
-        change_quality(item, 1)
-      end
+    klass.new(item).update_quality!
+  end
+end
+
+module Updateable
+  def update_quality!
+    update_quality
+    update_sell_in
+  end
+
+  def change_quality(amount)
+    @item.tap { |i| i.quality = [0,i.quality+amount,50].sort[1] }
+  end
+
+  def update_quality
+    change_quality(-1)
+    change_quality(-1) if @item.sell_in <= 0
+  end
+
+  def update_sell_in
+    @item.sell_in -= 1
+  end
+end
+
+class MyItem
+  include Updateable
+
+  def initialize item
+    @item = item
+  end
+end
+
+class AgedBrie < MyItem
+  def update_quality
+    change_quality(1)
+    change_quality(1) if @item.sell_in <= 0
+  end
+end
+
+class BackstagePass < MyItem
+  def update_quality
+    if @item.sell_in <= 0
+      @item.quality == 0 || @item.quality = 0
+    else
+      change_quality(1)
+      change_quality(1) if @item.sell_in <=  5
+      change_quality(1) if @item.sell_in <= 10
     end
   end
 end
 
-def change_quality(item, amount)
-  new_quality = item.quality + amount
-  item.quality = if    new_quality <  0 then  0
-                 elsif new_quality > 50 then 50
-                 else  new_quality
-                 end
-  item
+class Ragnaros < MyItem
+  def update_quality; end
+  def update_sell_in; end
 end
+
 
 # DO NOT CHANGE THINGS BELOW -----------------------------------------
 
