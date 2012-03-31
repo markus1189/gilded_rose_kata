@@ -1,5 +1,7 @@
 def update_quality(items)
-  extender = lambda { |i| i.extend Klassifiable }
+  # Yeah, we have to do it this way, because the 'goblin' will one-shot us
+  # if we change the 'Item' class at the bottom
+  extender = lambda { |i| i.is_a?(Item) && i.extend(Klassifiable) }
   items.map(&extender).map(&:klassify).map(&:update_quality!)
 end
 
